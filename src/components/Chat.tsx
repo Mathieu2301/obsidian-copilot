@@ -248,7 +248,7 @@ const Chat: React.FC<ChatProps> = ({
 
     // Autosave the chat if the setting is enabled
     if (settings.autosaveChat) {
-      await handleSaveAsNote();
+      handleSaveAsNote();
     }
 
     await getAIResponse(
@@ -261,7 +261,7 @@ const Chat: React.FC<ChatProps> = ({
     );
     // Autosave the chat if the setting is enabled
     if (settings.autosaveChat) {
-      await handleSaveAsNote();
+      handleSaveAsNote();
     }
     setLoading(false);
     setLoadingMessage(LOADING_MESSAGES.DEFAULT);
@@ -273,8 +273,8 @@ const Chat: React.FC<ChatProps> = ({
       return;
     }
 
-    // Filter visible messages
-    const visibleMessages = chatHistory.filter((message) => message.isVisible);
+    // Filter visible messages - use sharedState directly to ensure we get the latest messages
+    const visibleMessages = sharedState.getMessages().filter((message) => message.isVisible);
 
     if (visibleMessages.length === 0) {
       new Notice("No messages to save.");
@@ -349,7 +349,6 @@ ${chatContent}`;
       if (existingFile instanceof TFile) {
         // If the file exists, update its content
         await app.vault.modify(existingFile, noteContentWithTimestamp);
-        new Notice(`Chat updated in existing note: ${noteFileName}`);
       } else {
         // If the file doesn't exist, create a new one
         await app.vault.create(noteFileName, noteContentWithTimestamp);
@@ -361,7 +360,7 @@ ${chatContent}`;
     }
   }, [
     app,
-    chatHistory,
+    sharedState,
     currentModelKey,
     settings.defaultConversationTag,
     settings.defaultSaveFolder,
@@ -434,7 +433,7 @@ ${chatContent}`;
 
       // Autosave the chat if the setting is enabled
       if (settings.autosaveChat) {
-        await handleSaveAsNote();
+        handleSaveAsNote();
       }
     },
     [
@@ -484,7 +483,7 @@ ${chatContent}`;
 
       // Autosave the chat if the setting is enabled
       if (settings.autosaveChat) {
-        await handleSaveAsNote();
+        handleSaveAsNote();
       }
     },
     [
